@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  facilitator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: x402-facilitator
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      - SOLANA_RPC_URL=${SOLANA_RPC_URL:-https://api.devnet.solana.com}
+      - FEE_PAYER_PRIVATE_KEY=${FEE_PAYER_PRIVATE_KEY}
+      - NETWORK=${NETWORK:-solana-devnet}
+      - PORT=3000
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - CACHE_SIZE=${CACHE_SIZE:-10000}
+      - CACHE_TTL_SECONDS=${CACHE_TTL_SECONDS:-60}
+      - ENABLE_RATE_LIMIT=${ENABLE_RATE_LIMIT:-true}
+      - RATE_LIMIT_PER_SECOND=${RATE_LIMIT_PER_SECOND:-100}
+      - RATE_LIMIT_BURST_SIZE=${RATE_LIMIT_BURST_SIZE:-200}
+      - DEDUP_MAX_ENTRIES=${DEDUP_MAX_ENTRIES:-10000}
+      - DEDUP_WINDOW_SECONDS=${DEDUP_WINDOW_SECONDS:-300}
+      - PAYMENT_EXPIRY_SECONDS=${PAYMENT_EXPIRY_SECONDS:-600}
+      - ENABLE_WEBHOOKS=${ENABLE_WEBHOOKS:-false}
+      - WEBHOOK_URL=${WEBHOOK_URL:-}
+      - WEBHOOK_SECRET=${WEBHOOK_SECRET:-}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

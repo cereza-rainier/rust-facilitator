@@ -1,0 +1,77 @@
+# Build artifacts
+target/
+**/target/
+
+# Git
+.git/
+.gitignore
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Documentation
+*.md
+!README.md
+docs/
+
+# Scripts (not needed in container)
+scripts/
+
+# Tests
+tests/
+benches/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.bak
+*.backup
+*-backup-*/
+*.tar.gz
+
+# Node modules (test client)
+node_modules/
+test-client/node_modules/
+
+# Lock files (copied separately)
+# Cargo.lock is included for reproducible builds
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+
+# V2 planning docs
+V2_*.md
+
+# Old documentation
+*SUMMARY.md
+*EXPLAINED.md
+ARCHITECTURE_DIAGRAM.md
+BENCHMARKS*.md
+COMPLETE_TEST_RESULTS.md
+DEMO_GUIDE.md
+IMPLEMENTATION_PLAN.md
+PROGRESS.md
+PROJECT_*.md
+QUICKSTART.md
+REAL_*.md
+REFINEMENT*.md
+START_HERE.md
+SUBMISSION.md
+TESTING_GUIDE.md
+TEST_RESULTS.md
+

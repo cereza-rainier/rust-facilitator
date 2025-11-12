@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>x402 Facilitator - WebAssembly Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Mono', monospace;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+        }
+
+        .container {
+            background: #1e1e2e;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tagline {
+            font-size: 1.2em;
+            color: #a0a0a0;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin: 5px;
+            font-weight: bold;
+        }
+
+        .highlight {
+            background: #2d2d3d;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .highlight p {
+            line-height: 1.8;
+            color: #d0d0d0;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin: 10px 5px;
+            font-family: inherit;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result {
+            background: #2d2d3d;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .result.visible {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result h3 {
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .result.valid {
+            border-left: 4px solid #4caf50;
+        }
+
+        .result.invalid {
+            border-left: 4px solid #f44336;
+        }
+
+        .metric {
+            background: #1a1a2e;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin: 8px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .metric-label {
+            color: #a0a0a0;
+        }
+
+        .metric-value {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        pre {
+            background: #1a1a2e;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin-top: 15px;
+            border: 1px solid #333;
+        }
+
+        code {
+            color: #4caf50;
+            font-family: inherit;
+        }
+
+        .status {
+            padding: 10px;
+            border-radius: 6px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .status.loading {
+            background: #ffa726;
+            color: #1e1e2e;
+        }
+
+        .status.ready {
+            background: #4caf50;
+            color: white;
+        }
+
+        .status.error {
+            background: #f44336;
+            color: white;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        .feature-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #4caf50;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #808080;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 x402 Facilitator</h1>
+        <p class="tagline">Payment verification running entirely in your browser</p>
+
+        <div>
+            <span class="badge">Zero Server</span>
+            <span class="badge">WebAssembly</span>
+            <span class="badge">Rust Powered</span>
+            <span class="badge">Offline Capable</span>
+        </div>
+
+        <div class="highlight">
+            <p><strong>🎯 What makes this special?</strong></p>
+            <p>This page verifies Solana payments using <strong>pure Rust code compiled to WebAssembly</strong>. No backend server, no API calls, no network latency. Everything runs locally in your browser at near-native speeds.</p>
+        </div>
+
+        <div id="status" class="status loading">
+            ⏳ Loading WASM module...
+        </div>
+
+        <div id="controls" style="display:none;">
+            <button id="verifyBtn" onclick="verifyPayment()">
+                🔍 Verify Payment
+            </button>
+            <button onclick="runBenchmark()">
+                ⚡ Run Benchmark
+            </button>
+            <button onclick="showInfo()">
+                ℹ️ Module Info
+            </button>
+        </div>
+
+        <div id="result" class="result"></div>
+
+        <div class="highlight" style="margin-top: 30px;">
+            <p><strong>💡 Why this matters:</strong></p>
+            <ul class="feature-list">
+                <li><strong>No Server Required:</strong> Verify payments client-side, perfect for decentralized apps</li>
+                <li><strong>Instant Response:</strong> No network latency, sub-millisecond verification</li>
+                <li><strong>Works Offline:</strong> Once loaded, works without internet</li>
+                <li><strong>Memory Safe:</strong> Rust's guarantees prevent entire classes of bugs</li>
+                <li><strong>Same Code:</strong> Identical verification logic as the server</li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            <p>Built with ❤️ using Rust 🦀 and WebAssembly</p>
+            <p>Open DevTools Console to see detailed logs</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import init, { WasmVerifier } from '../../wasm-pkg/x402_facilitator.js';
+
+        let verifier;
+        const statusEl = document.getElementById('status');
+        const controlsEl = document.getElementById('controls');
+        const resultEl = document.getElementById('result');
+
+        async function initWasm() {
+            try {
+                console.log('🔨 Initializing WASM module...');
+                await init();
+                verifier = new WasmVerifier();
+                
+                console.log(`✅ WASM loaded! Version: ${verifier.version()}`);
+                
+                statusEl.className = 'status ready';
+                statusEl.textContent = '✅ WASM Module Ready';
+                controlsEl.style.display = 'block';
+            } catch (error) {
+                console.error('Failed to initialize WASM:', error);
+                statusEl.className = 'status error';
+                statusEl.textContent = '❌ Failed to load WASM module';
+            }
+        }
+
+        window.verifyPayment = function() {
+            if (!verifier) {
+                alert('WASM not loaded yet!');
+                return;
+            }
+
+            console.log('🔍 Starting verification...');
+            const start = performance.now();
+
+            const payment = {
+                x402_version: 1,
+                scheme: "exact",
+                network: "solana-devnet",
+                payload: {
+                    transaction: "mock_transaction_base64"
+                },
+                timestamp: Math.floor(Date.now() / 1000)
+            };
+
+            const requirements = {
+                scheme: "exact",
+                network: "solana-devnet",
+                max_amount_required: "1000000",
+                asset: "SOL",
+                pay_to: "recipient_address",
+                resource: "/api/premium",
+                description: "Premium API Access",
+                mime_type: "application/json",
+                max_timeout_seconds: 30,
+                extra: {
+                    fee_payer: "fee_payer_address"
+                }
+            };
+
+            const result = verifier.verify(payment, requirements);
+            const duration = (performance.now() - start).toFixed(3);
+
+            console.log('Result:', result);
+            console.log(`Duration: ${duration}ms`);
+
+            displayResult(result, duration);
+        };
+
+        window.runBenchmark = function() {
+            if (!verifier) return;
+
+            const iterations = 1000;
+            console.log(`🏃 Running benchmark: ${iterations} verifications...`);
+            
+            const payment = {
+                x402_version: 1,
+                scheme: "exact",
+                network: "solana-devnet",
+                payload: { transaction: "test" },
+                timestamp: Math.floor(Date.now() / 1000)
+            };
+
+            const requirements = {
+                scheme: "exact",
+                network: "solana-devnet",
+                max_amount_required: "1000000",
+                asset: "SOL",
+                pay_to: "test",
+                resource: "/test",
+                description: "test",
+                mime_type: "application/json",
+                max_timeout_seconds: 30,
+                extra: { fee_payer: "test" }
+            };
+
+            const start = performance.now();
+            
+            for (let i = 0; i < iterations; i++) {
+                verifier.verify(payment, requirements);
+            }
+            
+            const duration = performance.now() - start;
+            const avgTime = duration / iterations;
+
+            resultEl.className = 'result visible';
+            resultEl.innerHTML = `
+                <h3>⚡ Benchmark Results</h3>
+                <div class="metric">
+                    <span class="metric-label">Total Iterations:</span>
+                    <span class="metric-value">${iterations.toLocaleString()}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Total Duration:</span>
+                    <span class="metric-value">${duration.toFixed(2)}ms</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Average Time:</span>
+                    <span class="metric-value">${avgTime.toFixed(3)}ms per verification</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Throughput:</span>
+                    <span class="metric-value">${(iterations / (duration / 1000)).toFixed(0)} verifications/sec</span>
+                </div>
+            `;
+        };
+
+        window.showInfo = function() {
+            if (!verifier) return;
+
+            resultEl.className = 'result visible';
+            resultEl.innerHTML = `
+                <h3>ℹ️ Module Information</h3>
+                <div class="metric">
+                    <span class="metric-label">Version:</span>
+                    <span class="metric-value">${verifier.version()}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Supports Scheme:</span>
+                    <span class="metric-value">${verifier.supports_scheme("exact") ? "exact ✓" : "N/A"}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Supports Networks:</span>
+                    <span class="metric-value">solana, solana-devnet ✓</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Runtime:</span>
+                    <span class="metric-value">WebAssembly (Browser)</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Memory Safe:</span>
+                    <span class="metric-value">Yes (Rust) ✓</span>
+                </div>
+            `;
+        };
+
+        function displayResult(result, duration) {
+            resultEl.className = `result visible ${result.is_valid ? 'valid' : 'invalid'}`;
+            
+            let html = `
+                <h3>${result.is_valid ? '✅ Payment VALID' : '❌ Payment INVALID'}</h3>
+                <div class="metric">
+                    <span class="metric-label">Verification Time:</span>
+                    <span class="metric-value">${duration}ms</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Network Calls:</span>
+                    <span class="metric-value">Zero</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Location:</span>
+                    <span class="metric-value">Your Browser (WASM)</span>
+                </div>
+            `;
+
+            if (result.payer) {
+                html += `
+                    <div class="metric">
+                        <span class="metric-label">Payer:</span>
+                        <span class="metric-value">${result.payer}</span>
+                    </div>
+                `;
+            }
+
+            if (result.invalid_reason) {
+                html += `
+                    <div class="metric">
+                        <span class="metric-label">Reason:</span>
+                        <span class="metric-value" style="color: #f44336;">${result.invalid_reason}</span>
+                    </div>
+                `;
+            }
+
+            html += `<pre><code>${JSON.stringify(result, null, 2)}</code></pre>`;
+            
+            resultEl.innerHTML = html;
+        }
+
+        // Initialize on load
+        initWasm();
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: facilitator-config
+  labels:
+    app: x402-facilitator
+data:
+  solana_rpc_url: "https://api.mainnet-beta.solana.com"
+  network: "solana"
+  cache_size: "1000"
+  cache_ttl_seconds: "30"
+  enable_rate_limit: "true"
+  rate_limit_per_second: "10"
+  rate_limit_burst_size: "20"
+

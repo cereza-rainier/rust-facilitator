@@ -1,0 +1,124 @@
+[package]
+name = "x402-facilitator"
+version = "1.0.0"
+edition = "2021"
+authors = ["cereza-rainier"]
+description = "High-performance x402 facilitator implementation in Rust"
+license = "Apache-2.0"
+repository = "https://github.com/yourname/x402-facilitator-rust"
+keywords = ["x402", "solana", "facilitator", "payment", "blockchain"]
+
+[lib]
+name = "x402_facilitator"
+path = "src/lib.rs"
+crate-type = ["rlib", "cdylib"]  # rlib for Rust, cdylib for C FFI
+
+[dependencies]
+# Web framework
+axum = { version = "0.7", features = ["macros"] }
+tower = "0.5"
+tower-http = { version = "0.6", features = ["cors", "trace"] }
+tokio = { version = "1.41", features = ["full"] }
+
+# Solana - Latest stable versions
+solana-sdk = "2.0"
+solana-client = "2.0"
+solana-transaction-status = "2.0"
+spl-token = "6.0"
+spl-token-2022 = "5.0"  # IMPORTANT: Token-2022 support
+spl-associated-token-account = "5.0"
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+bincode = "1.3"
+base64 = "0.22"
+bs58 = "0.5"
+
+# Error handling
+thiserror = "2.0"
+anyhow = "1.0"
+
+# Logging & tracing
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# Configuration
+dotenvy = "0.15"  # Maintained fork of dotenv
+
+# Metrics (optional, add in week 2)
+# prometheus = { version = "0.13", features = ["process"] }
+# axum-prometheus = "0.7"
+
+# Async utilities
+futures = "0.3"
+async-trait = "0.1"
+
+# Phase 2/3 enhancements
+uuid = { version = "1.18.1", features = ["v4", "serde"] }
+moka = { version = "0.12.11", features = ["future", "sync"] }
+prometheus = { version = "0.14.0", features = ["process"] }
+axum-prometheus = "0.9.0"
+lazy_static = "1.5.0"
+tower_governor = "0.8.0"
+governor = "0.10.1"
+clap = { version = "4", features = ["derive"] }
+
+# Parallel processing
+rayon = "1.8"
+
+# WebAssembly support
+wasm-bindgen = "0.2"
+serde-wasm-bindgen = "0.6"
+console_error_panic_hook = "0.1"
+
+# Phase 4: OpenAPI documentation
+utoipa = { version = "5.3", features = ["axum_extras", "chrono", "uuid"] }
+
+# Phase 4: Webhooks
+reqwest = { version = "0.12", features = ["json"] }
+hmac = "0.12"
+sha2 = "0.10"
+hex = "0.4"
+chrono = "0.4"
+
+[[bin]]
+name = "x402-facilitator"
+path = "src/main.rs"
+
+[[bin]]
+name = "facilitator-cli"
+path = "src/bin/facilitator-cli.rs"
+
+# WASM-specific dependencies
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+getrandom = { version = "0.2", features = ["js"] }
+web-sys = { version = "0.3", features = ["console"] }
+
+[dev-dependencies]
+# Testing
+tokio-test = "0.4"
+httpmock = "0.7"  # Better for HTTP testing
+criterion = { version = "0.5", features = ["html_reports", "async_tokio"] }
+reqwest = { version = "0.12", features = ["json"] }
+solana-program-test = "2.0"  # For Solana integration tests
+hyper = "1.4"  # For integration tests
+tower = "0.5"  # For testing
+
+# Benchmarks (will be added in Day 7)
+# [[bench]]
+# name = "facilitator_bench"
+# harness = false
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
+
+[profile.dev]
+opt-level = 0
+
+[profile.test]
+opt-level = 1
+

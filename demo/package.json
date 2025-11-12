@@ -1,0 +1,17 @@
+{
+  "name": "x402-facilitator-demo",
+  "version": "1.0.0",
+  "description": "Demo application for x402 Rust Facilitator",
+  "scripts": {
+    "server": "node server.js",
+    "client": "node client.js",
+    "demo": "sh run-demo.sh",
+    "perf": "node performance-demo.js",
+    "stress": "node stress-test.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "axios": "^1.6.0"
+  }
+}
+
